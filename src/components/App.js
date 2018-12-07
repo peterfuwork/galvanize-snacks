@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
 import Category from './Category';
 import Single from './Single';
+import Login from './login';
 import { BrowserRouter, Route } from "react-router-dom";
 
 class App extends Component {
@@ -9,9 +10,11 @@ class App extends Component {
 
     this.state = {
       snacks: [],
-      comments: {},
+      users: [],
+      comments: [],
 
       newComment:"",
+      newTitle:"",
       isEditButtonClick: false,
 
       editMsg: "",
@@ -32,45 +35,48 @@ class App extends Component {
     }).then(data => {
       return data;
     });
-    const msgData = await fetch('http://localhost:3001/comments/')
-    .then(data => data.json())
+    const users = await fetch('https://gsnacks-db.herokuapp.com/users')
+    .then(data => {
+      return data.json();
+    }).then(data => {
+      return data;
+    });
+    const comments = await fetch('https://gsnacks-db.herokuapp.com/reviews')
+    .then(data => {
+      return data.json();
+    }).then(data => {
+      return data;
+    });
     this.setState({
       snacks,
-      comments: msgData.comments
+      comments
     })
   }
   
-  postMsg = async (code, comment, postLength) => {
-    var newBody = {
-      code,
-      comment,
-      postLength
-    };
-    console.log('newBody', newBody.code)
-    await fetch('http://localhost:3001/messagePOST/', {
-      headers: {
-        'Content-Type': 'application/json',
-        'Accept': 'application/json',
-      },
-      method: "POST",
-      body: JSON.stringify(newBody)
-    })
-    .then(response => {
-      return response.json();
-    })
-    .then((response) => {
-      console.log('response',response)
-      
-      console.log('code',code)
-      this.setState( prevState => ({
-          comments: {
-            ...prevState.comments,
-            [code]: response
-          }
-        })
-      )
-    })
-  }
+  // postMsg = async (comment) => {
+  //   const proxy = "https://cors-anywhere.herokuapp.com";
+  //   await fetch(proxy + 'https://gsnacks-db.herokuapp.com/reviews', {
+  //     headers: {
+  //       'Content-Type': 'application/json'
+  //     },
+  //     method: "POST",
+  //     body: JSON.stringify(comment)
+  //   })
+  //   .then(response => {
+  //     return response.json();
+  //   })
+  //   .then((response) => {
+  //     console.log('response',response)
+  //     this.setState(({
+  //         comments: [
+  //           ...this.state.comments,
+  //           response
+  //         ]
+  //       })
+  //     )
+  //   })
+  // }
+
 
   updateMsg = async (code, cid, text, user, rating, arrIndex) => {
     var newBody = {
@@ -138,20 +144,45 @@ class App extends Component {
     });
   }
 
-  onHandleNewComment = (e, postCode, specificPostCommentLength, ratingValue) => {
+  onChangeTitle = (e) => {
+    this.setState({
+      newTitle: e.target.value
+    });
+  }
+
+  onHandleNewComment = (e, user_id, snack_id, ratingValue) => {
     e.preventDefault();
     console.log('ratingValue', ratingValue)
     const comment = { 
+      title: this.state.newTitle,
       text: this.state.newComment,
-      user: "",
-      rating: ratingValue
+      rating: ratingValue,
+      snack_id,
+      user_id
     };
-    console.log('comment', comment)
-    this.postMsg(postCode, comment, specificPostCommentLength, ratingValue);
-    this.setState({
-      newComment: "",
-      selectedRatingValue: ""
+    // this.postMsg(comment);
+    fetch('https://gsnacks-db.herokuapp.com/reviews', {
+      method: "POST",
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify(comment)
     })
+    .then(response => response.json())
+    .then(response => {
+        console.log('response',response)
+        this.setState({
+            comments: [
+              ...this.state.comments,
+              response
+            ]
+        })
+    })
+    // this.setState({
+    //   newComment: "",
+    //   newTitle: "",
+    //   selectedRatingValue: ""
+    // })
     console.log('selectedRatingValue', this.state.selectedRatingValue);
   }
 
@@ -249,8 +280,9 @@ class App extends Component {
                       comments={this.state.comments}
                       onHandleNewComment={this.onHandleNewComment}
                       onChangeComment={this.onChangeComment}
+                      onChangeTitle={this.onChangeTitle}
                       newComment={this.state.newComment}
- 
+                      newTitle={this.state.newTitle}
                       onDeleteComment={this.onDeleteComment}
 
                       onClickEdit={this.onClickEdit}
@@ -269,9 +301,13 @@ class App extends Component {
                       handleAccordionClick={this.handleAccordionClick}
                       shown={this.state.shown}
                       {...props}
-                    />
-                  }
-                />
+                    />}
+                  />
+                  <Route 
+                    exact
+                    path="/login"
+                    render={(props) => <Login />}
+                  />
               </section>
             </div>
           </div>
