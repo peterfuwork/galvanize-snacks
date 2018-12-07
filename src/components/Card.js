@@ -6,11 +6,11 @@ const Card = (props) => {
     return (
         <div className="col-sm-4 product">
             <Link to={`/snacks/id/${props.id}`}>
-                <img className="img" src={props.image} alt={props.name} />
+                <img className="img" src={props.img} alt={props.name} />
             </Link>
             <h4 className="name">{props.name}</h4>
             <div className="price">${props.price}</div>
-            <div className="desc">{props.desc}</div>
+            <div className="desc">{props.description}</div>
         </div>
     );
 }

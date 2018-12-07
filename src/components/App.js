@@ -1,6 +1,5 @@
 import React, { Component } from 'react';
 import Category from './Category';
-import Filtered from './Filtered';
 import Single from './Single';
 import { BrowserRouter, Route } from "react-router-dom";
 
@@ -10,7 +9,6 @@ class App extends Component {
 
     this.state = {
       snacks: [],
-      filteredSnack: [],
       comments: {},
 
       newComment:"",
@@ -28,14 +26,16 @@ class App extends Component {
   }
 
   async componentDidMount() {
-    const data = await fetch('http://localhost:3001/fish/')
-    .then(data => data.json());
+    const snacks = await fetch('https://gsnacks-db.herokuapp.com/')
+    .then(data => {
+      return data.json();
+    }).then(data => {
+      return data;
+    });
     const msgData = await fetch('http://localhost:3001/comments/')
     .then(data => data.json())
-
     this.setState({
-      snacks: data.snacks,
-      filteredSnack: data.snacks,
+      snacks,
       comments: msgData.comments
     })
   }
@@ -232,23 +232,11 @@ class App extends Component {
                   component={() => 
                     <Category 
                       snacks={this.state.snacks}
-                      filteredSnack={this.state.filteredSnack}
                       comments={this.state.comments}
-                      onClickFilter={this.onClickFilter}
 
                       onHandleClickPage={this.onHandleClickPage}
                       currentPage={this.state.currentPage}
                       snackPerPage={this.state.snackPerPage}
-                    />
-                  }
-                />
-                <Route 
-                  exact 
-                  path="/snacks/type/:type"
-                  component={(props) => 
-                    <Filtered 
-                      snacks={this.state.snacks}
-                      {...props}
                     />
                   }
                 />
