@@ -4,8 +4,8 @@ export const printResult = (number) => {
     const empty = '<span class="fa fa-star-o"></span>';
     const half = '<span class="fa fa-star-half-o"></span>';
     let result = '';
-    
-    switch(number) {
+    let newNumber = Number(number);
+    switch(newNumber) {
         case 5:
         result += solid;
         result += solid;

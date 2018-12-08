@@ -21,7 +21,7 @@ class App extends Component {
       editMsgCid: "",
       editRatingValue: "",
 
-      selectedRatingValue: "",
+      selectedRatingValue: 0,
 
       currentPage: 1,
       snackPerPage: 6
@@ -53,29 +53,30 @@ class App extends Component {
     })
   }
   
-  // postMsg = async (comment) => {
-  //   const proxy = "https://cors-anywhere.herokuapp.com";
-  //   await fetch(proxy + 'https://gsnacks-db.herokuapp.com/reviews', {
-  //     headers: {
-  //       'Content-Type': 'application/json'
-  //     },
-  //     method: "POST",
-  //     body: JSON.stringify(comment)
-  //   })
-  //   .then(response => {
-  //     return response.json();
-  //   })
-  //   .then((response) => {
-  //     console.log('response',response)
-  //     this.setState(({
-  //         comments: [
-  //           ...this.state.comments,
-  //           response
-  //         ]
-  //       })
-  //     )
-  //   })
-  // }
+  postMsg = async (comment) => {
+    console.log("comment",comment);
+    await fetch('https://gsnacks-db.herokuapp.com/reviews', {
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      method: "POST",
+      body: JSON.stringify(comment)
+    })
+    .then(response => {
+      return response.json();
+    })
+    .then((response) => {
+
+      console.log('response',response)
+      this.setState(({
+          comments: [
+            ...this.state.comments,
+            response
+          ]
+        })
+      )
+    })
+  }
 
 
   updateMsg = async (code, cid, text, user, rating, arrIndex) => {
@@ -157,32 +158,15 @@ class App extends Component {
       title: this.state.newTitle,
       text: this.state.newComment,
       rating: ratingValue,
-      snack_id,
-      user_id
+      snack_id: Number(snack_id),
+      user_id: Number(user_id)
     };
-    // this.postMsg(comment);
-    fetch('https://gsnacks-db.herokuapp.com/reviews', {
-      method: "POST",
-      headers: {
-        'Content-Type': 'application/json'
-      },
-      body: JSON.stringify(comment)
+    this.postMsg(comment);
+    this.setState({
+      newComment: "",
+      newTitle: "",
+      selectedRatingValue: ""
     })
-    .then(response => response.json())
-    .then(response => {
-        console.log('response',response)
-        this.setState({
-            comments: [
-              ...this.state.comments,
-              response
-            ]
-        })
-    })
-    // this.setState({
-    //   newComment: "",
-    //   newTitle: "",
-    //   selectedRatingValue: ""
-    // })
     console.log('selectedRatingValue', this.state.selectedRatingValue);
   }
 

@@ -22,7 +22,7 @@ class Single extends Component {
     }
     const snack = this.props.snacks.filter(single => single.id === Number(this.props.match.params.id));
 console.log('snack',snack[0].id)
-    const arrOfOnePostComments = this.props.comments.filter(comment => comment.snack_id == snack[0].id)
+    const arrOfOnePostComments = this.props.comments.filter(comment => comment.snack_id === snack[0].id)
 
     console.log(arrOfOnePostComments)
     const comments = arrOfOnePostComments.map((comment, i) => {
@@ -95,11 +95,12 @@ console.log('snack',snack[0].id)
                     <div className="price single">${snack[0].price}</div>
                     <h5 className="comments-title single">Customer Review</h5>
                     <div className="comments">{ comments }</div>
-                    <form className="leave-message-form" onSubmit={(e) => this.props.onHandleNewComment(e, snack[0].id, "user", this.props.selectedRatingValue)}>
+                    <form className="leave-message-form" onSubmit={(e) => this.props.onHandleNewComment(e, 1, snack[0].id, this.props.selectedRatingValue)}>
                         <input 
                             placeholder="title"
                             type="text"
                             className="new-comment"
+                            value={this.props.newTitle}
                             onChange={this.props.onChangeTitle} />
                         <textarea 
                             className="new-comment" 
